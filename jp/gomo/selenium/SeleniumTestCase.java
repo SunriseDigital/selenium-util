@@ -155,6 +155,27 @@ public class SeleniumTestCase extends TestCase {
 		fail(message);
 	}
 	
+	protected void waitForNotFoundElements(SearchContext element, By selector) throws InterruptedException 
+	{
+		waitForNotFoundElements("Still found elements for "+selector, element, selector, default_wait_count);
+	}
+	
+	protected void waitForNotFoundElements(String message, SearchContext element, By selector, int waitCount) throws InterruptedException 
+	{
+		for (int i = 0; i < waitCount; i++)
+		{
+			List<WebElement> list = element.findElements(selector);
+			if(list.size() == 0)
+			{
+				return;
+			}
+			
+			Thread.sleep(sleep_interval);
+		}
+		
+		fail(message);
+	}
+	
 	protected void assertNotExistsElement(WebElement element)
 	{
 		assertNotExistsElement(element+" is still exists.", element);
@@ -206,16 +227,20 @@ public class SeleniumTestCase extends TestCase {
 		}
 	}
 	
-	protected WebElement gmailFindFirstAnchor(WebDriver driver, String containsString)
+	protected WebElement gmailFindLastAnchor(WebDriver driver, String containsString)
 	{
-		return gmailFindFirstAnchor("Not found anchor having "+containsString, driver, containsString);
+		return gmailFindLastAnchor("Not found anchor having "+containsString, driver, containsString);
 	}
 	
-	protected WebElement gmailFindFirstAnchor(String message, WebDriver driver, String containsString)
+	protected WebElement gmailFindLastAnchor(String message, WebDriver driver, String containsString)
 	{
-		List<WebElement> link_list = driver.findElements(By.cssSelector("div[role=main] div.h7 a[target=_blank]"));
-		for (Iterator<WebElement> iterator = link_list.iterator(); iterator.hasNext();) {
-			WebElement link = iterator.next();
+		List<WebElement> link_list = driver.findElements(By.cssSelector("div.h7 a[target=_blank]"));
+		int count = link_list.size();
+		System.out.println("TotalCount:"+count);
+		for (int i = count - 1; i >= 0; i--) {
+			
+			WebElement link = link_list.get(i);
+			System.out.println(i+":"+link.getAttribute("href"));
 			if(link.getAttribute("href").contains(containsString))
 			{
 				return link;
