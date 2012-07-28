@@ -17,7 +17,7 @@ public class SeleniumTestCase extends TestCase {
 	
 	private int sleep_interval = 200;
 	
-	private int default_wait_count = 10;
+	private int default_wait_count = 50;
 	
 	protected String getFileAbsolutePath(String path)
 	{
