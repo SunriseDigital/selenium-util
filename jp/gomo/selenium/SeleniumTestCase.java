@@ -1,14 +1,12 @@
 package jp.gomo.selenium;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import junit.framework.TestCase;
@@ -202,53 +200,5 @@ public class SeleniumTestCase extends TestCase {
 		System.out.println(part);
 		
 		return true;
-	}
-	
-	protected void gmailOpen(WebDriver driver, String id, String password)
-	{
-		driver.get("https://mail.google.com/mail?hl=ja");
-		driver.findElement(By.xpath("//*[@id=\"Email\"]")).sendKeys(id);
-		driver.findElement(By.xpath("//*[@id=\"Passwd\"]")).sendKeys(password);
-		driver.findElement(By.xpath("//*[@id=\"signIn\"]")).click();
-	}
-	
-	protected void gmailOpenFirstMail(WebDriver driver, String mailAddress) throws InterruptedException
-	{
-		WebElement iframe = waitForFindElement(driver, By.cssSelector("#canvas_frame"));
-		driver.switchTo().frame(iframe);
-		List<WebElement> email_list = driver.findElements(By.cssSelector("div.Cp table.F tr span[email]"));
-		for (Iterator<WebElement> iterator = email_list.iterator(); iterator.hasNext();) {
-			WebElement email = (WebElement) iterator.next();
-			if(email.getAttribute("email").equals(mailAddress))
-			{
-				email.click();
-				break;
-			}
-		}
-	}
-	
-	protected WebElement gmailFindLastAnchor(WebDriver driver, String containsString)
-	{
-		return gmailFindLastAnchor("Not found anchor having "+containsString, driver, containsString);
-	}
-	
-	protected WebElement gmailFindLastAnchor(String message, WebDriver driver, String containsString)
-	{
-		List<WebElement> link_list = driver.findElements(By.cssSelector("div.h7 a[target=_blank]"));
-		int count = link_list.size();
-		System.out.println("TotalCount:"+count);
-		for (int i = count - 1; i >= 0; i--) {
-			
-			WebElement link = link_list.get(i);
-			System.out.println(i+":"+link.getAttribute("href"));
-			if(link.getAttribute("href").contains(containsString))
-			{
-				return link;
-			}
-		}
-		
-		fail(message);
-		
-		return null;
 	}
 }
