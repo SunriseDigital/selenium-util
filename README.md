@@ -1,2 +1,33 @@
-testcase.selenium
-=================
+##Seleniumのテストケース
+Seleniumのテストケースを作成するのに便利なユーティリティです。
+
+###Install
+cloneしてください。
+```
+$ git clone git@github.com:gomo/selenium-lib.git
+```
+
+このディレクトリを参照してeclipseのプロジェクトを作成し、`library`フォルダに下記のファイルをコピーし、jarファイルはビルドパスに追加して下さい。
+http://code.google.com/p/selenium/downloads/list  
+```
+selenium-server-standalone-2.25.0.jar
+IEDriverServer.exe
+chromedriver.exe
+```
+http://www.oracle.com/technetwork/java/javamail/index.html
+```
+mail.jar
+```
+
+個々の環境に依存しそうなパスなどはホームフォルダにおいたPropertieファイルから読み込みます。ホームフォルダに`selenium-lib.properties`というファイルを作り、下記の情報を書き込んでください。（パスは自分の環境に合わせて書き換えて下さい）このファイルの内容は直接`System.setProperty(key, value)`に渡されます。  
+```
+webdriver.chrome.driver = C:\\Path\\to\\workspace\\selenium-lib\\library\\chromedriver.exe
+webdriver.firefox.bin  = C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe
+webdriver.ie.driver  = C:\\Path\\to\\workspace\\selenium-lib\\library\\IEDriverServer.exe
+```
+
+
+###テストケースとの関連付け
+実際にテストケースを置くプロジェクトは同じワークスペースに置いてください。対象のプロジェクトを右クリックし`Properties > Java Build Path > Projects`を選択、`Add`でselenium-libのプロジェクトを追加します。
+
+これだけではまだ、selenium-server-standalone-2.25.0.jarが参照できないので`Properties > Java Build Path > Libraries`を選択し、`Add JARs...`をクリックし先ほどコピーしたselenium-lib/library以下のjarファイルをビルドパスに追加して下さい。（JavaMailはGmailにアクセスする場合に必要です。）
