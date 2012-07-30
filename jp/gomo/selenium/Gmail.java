@@ -11,11 +11,14 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
 
+
+
 public class Gmail {
 	
 	private Store store;
 	private Session session;
 	private URLName urlName;
+	private ConsoleLoading counter;
 	
 	public Gmail(String login_id, String password) throws MessagingException
 	{
@@ -35,10 +38,17 @@ public class Gmail {
 
 		session = Session.getDefaultInstance(props, null);
 		
+		counter = new ConsoleLoading();
 	}
 	
 	public Message waitForFindMessage(MessageFinder finder) throws InterruptedException, MessagingException, ParseException
 	{
+		Thread counterThread = new Thread(counter);
+		
+		counterThread.start();
+		
+		close();
+		System.out.print("Connect to "+urlName.getHost()+" and search new message .");
 		Message message = null;
 		for (int i = 0; i < 20; i++) 
 		{
@@ -46,13 +56,15 @@ public class Gmail {
 			store.connect();
 			
 			Folder folder = store.getFolder("INBOX");
-			folder.open(Folder.READ_ONLY);
+			folder.open(Folder.READ_WRITE);
 			
 			Message[] messages = folder.getMessages();
 			for (int j = 0; j < messages.length; j++) 
 			{
 				if(finder.isMatch(messages[j]))
 				{
+					System.out.println("");
+					System.out.println("Found the message.");
 					message = messages[j];
 					break;
 				}
@@ -63,11 +75,12 @@ public class Gmail {
 				break;
 			}
 			
-			store.close();
-			store = null;
-			Thread.sleep(800);
+			close();
+			
+			Thread.sleep(500);
 		}
 		
+		counter.shutdown();
 		return message;
 	}
 	
@@ -76,6 +89,7 @@ public class Gmail {
 		if(store != null)
 		{
 			store.close();
+			store = null;
 		}
 	}
 
