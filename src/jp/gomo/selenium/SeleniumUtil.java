@@ -2,6 +2,7 @@ package jp.gomo.selenium;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map.Entry;
@@ -14,15 +15,13 @@ import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
-import junit.framework.TestCase;
-
-public class SeleniumTestCase extends TestCase {
+public class SeleniumUtil{
 	
 	private int sleep_interval = 200;
 	
 	private int default_wait_count = 50;
 	
-	public void setUp() throws Exception {
+	public SeleniumUtil() throws IOException{
 		
 		Properties config = new Properties();
 		InputStream inputStream = new FileInputStream(new File(System.getProperty("user.home")+File.separator+"selenium-lib.properties"));
@@ -35,7 +34,7 @@ public class SeleniumTestCase extends TestCase {
 		}
 	}
 	
-	/*protected List<WebDriver> getChromeDriver()
+	/*public List<WebDriver> getChromeDriver()
 	{
 		List<WebDriver> drivers = new ArrayList<WebDriver>();
 		
@@ -44,7 +43,7 @@ public class SeleniumTestCase extends TestCase {
 		return drivers;
 	}
 	
-	protected List<WebDriver> getInternetExplorerDriver()
+	public List<WebDriver> getInternetExplorerDriver()
 	{
 		List<WebDriver> drivers = new ArrayList<WebDriver>();
 		
@@ -53,7 +52,7 @@ public class SeleniumTestCase extends TestCase {
 		return drivers;
 	}
 	
-	protected List<WebDriver> getFirefoxDriver()
+	public List<WebDriver> getFirefoxDriver()
 	{
 		List<WebDriver> drivers = new ArrayList<WebDriver>();
 		
@@ -65,7 +64,7 @@ public class SeleniumTestCase extends TestCase {
 		return drivers;
 	}
 	
-	protected List<WebDriver> getAllDrivers()
+	public List<WebDriver> getAllDrivers()
 	{
 		List<WebDriver> drivers = new ArrayList<WebDriver>();
 		
@@ -76,13 +75,13 @@ public class SeleniumTestCase extends TestCase {
 		return drivers;
 	}*/
 	
-	protected String getFileAbsolutePath(String path)
+	public String getFileAbsolutePath(String path)
 	{
 		File image = new File(path);
 		return image.getAbsolutePath();
 	}
 	
-	protected WebElement waitForDisplay(WebElement element) throws InterruptedException
+	public WebElement waitForDisplay(WebElement element) throws InterruptedException, NotDisplayException
 	{
 		for (int i = 0; i < default_wait_count; i++)
 		{
@@ -98,7 +97,7 @@ public class SeleniumTestCase extends TestCase {
 		
 		if(!element.isDisplayed())
 		{
-			fail(element+" is not displayed.");
+			throw new NotDisplayException(element+" is not displayed.");
 		}
 		
 		Thread.sleep(sleep_interval);
@@ -106,17 +105,17 @@ public class SeleniumTestCase extends TestCase {
 		return element;
 	}
 	
-	protected WebElement waitForFindElement(String message, SearchContext element, By selector) throws InterruptedException 
+	public WebElement waitForFindElement(String message, SearchContext element, By selector) throws InterruptedException, NotFoundException 
 	{
 		return waitForFindElement(message, element, selector, default_wait_count);
 	}
 	
-	protected WebElement waitForFindElement(SearchContext element, By selector) throws InterruptedException 
+	public WebElement waitForFindElement(SearchContext element, By selector) throws InterruptedException, NotFoundException 
 	{
 		return waitForFindElement("Not found element for "+selector, element, selector, default_wait_count);
 	}
 
-	protected WebElement waitForFindElement(String message, SearchContext element, By selector, int waitCount) throws InterruptedException 
+	public WebElement waitForFindElement(String message, SearchContext element, By selector, int waitCount) throws InterruptedException, NotFoundException 
 	{
 		WebElement target = null;
 		
@@ -134,18 +133,18 @@ public class SeleniumTestCase extends TestCase {
 		
 		if(target == null)
 		{
-			fail(message);
+			throw new NotFoundException(message);
 		}
 		
 		return target;
 	}
 	
-	protected List<WebElement> waitForFindElements(SearchContext element, By selector) throws InterruptedException 
+	public List<WebElement> waitForFindElements(SearchContext element, By selector) throws InterruptedException, NotFoundException 
 	{
 		return waitForFindElements("Not found elements for "+selector, element, selector, default_wait_count);
 	}
 	
-	protected List<WebElement> waitForFindElements(String message, SearchContext element, By selector, int waitCount) throws InterruptedException 
+	public List<WebElement> waitForFindElements(String message, SearchContext element, By selector, int waitCount) throws InterruptedException, NotFoundException 
 	{
 		for (int i = 0; i < waitCount; i++)
 		{
@@ -158,17 +157,15 @@ public class SeleniumTestCase extends TestCase {
 			Thread.sleep(sleep_interval);
 		}
 		
-		fail(message);
-		
-		return null;
+		throw new NotFoundException(message);
 	}
 	
-	protected List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount) throws InterruptedException 
+	public List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount) throws InterruptedException, NotFoundException 
 	{
 		return waitForCountElements("Not found elements for "+selector, element, selector, expectedCount, default_wait_count);
 	}
 	
-	protected List<WebElement> waitForCountElements(String message, SearchContext element, By selector, int expectedCount, int waitCount) throws InterruptedException 
+	public List<WebElement> waitForCountElements(String message, SearchContext element, By selector, int expectedCount, int waitCount) throws InterruptedException, NotFoundException 
 	{
 		for (int i = 0; i < waitCount; i++)
 		{
@@ -181,17 +178,15 @@ public class SeleniumTestCase extends TestCase {
 			Thread.sleep(sleep_interval);
 		}
 		
-		fail(message);
-		
-		return null;
+		throw new NotFoundException(message);
 	}
 	
-	protected void waitForDisappearElement(WebElement element) throws InterruptedException 
+	public void waitForDisappearElement(WebElement element) throws InterruptedException, NotDisappearException 
 	{
 		waitForDisappearElement(element+" is still exists.", element, default_wait_count);
 	}
 	
-	protected void waitForDisappearElement(String message, WebElement element, int waitCount) throws InterruptedException 
+	public void waitForDisappearElement(String message, WebElement element, int waitCount) throws InterruptedException, NotDisappearException 
 	{
 		for (int i = 0; i < waitCount; i++)
 		{
@@ -209,15 +204,15 @@ public class SeleniumTestCase extends TestCase {
 			Thread.sleep(sleep_interval);
 		}
 		
-		fail(message);
+		throw new NotDisappearException(message);
 	}
 	
-	protected void waitForNotFoundElements(SearchContext element, By selector) throws InterruptedException 
+	public void waitForNotFoundElements(SearchContext element, By selector) throws InterruptedException, NotFoundException 
 	{
 		waitForNotFoundElements("Still found elements for "+selector, element, selector, default_wait_count);
 	}
 	
-	protected void waitForNotFoundElements(String message, SearchContext element, By selector, int waitCount) throws InterruptedException 
+	public void waitForNotFoundElements(String message, SearchContext element, By selector, int waitCount) throws InterruptedException, NotFoundException 
 	{
 		for (int i = 0; i < waitCount; i++)
 		{
@@ -230,20 +225,20 @@ public class SeleniumTestCase extends TestCase {
 			Thread.sleep(sleep_interval);
 		}
 		
-		fail(message);
+		throw new NotFoundException(message);
 	}
 	
-	protected void assertNotExistsElement(WebElement element)
+	public void assertNotExistsElement(WebElement element) throws NotDisappearException
 	{
 		assertNotExistsElement(element+" is still exists.", element);
 	}
 	
-	protected void assertNotExistsElement(String message, WebElement element)
+	public void assertNotExistsElement(String message, WebElement element) throws NotDisappearException
 	{
 		try 
 		{
 			element.isDisplayed();
-			fail(message);
+			throw new NotDisappearException(message);
 		}
 		catch (StaleElementReferenceException e)
 		{
@@ -251,7 +246,7 @@ public class SeleniumTestCase extends TestCase {
 		}
 	}
 	
-	protected boolean hasClass(WebElement element) {
+	public boolean hasClass(WebElement element) {
 		String _class = element.getAttribute("class");
 		
 		String[] part = _class.split(" ");
