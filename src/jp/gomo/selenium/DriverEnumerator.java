@@ -31,7 +31,6 @@ public class DriverEnumerator implements Enumeration<WebDriver> {
 	{
 		this();
 		executeDriver = driverName;
-		System.out.println(driversKey);
 	}
 
 	@Override
