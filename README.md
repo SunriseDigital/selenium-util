@@ -1,4 +1,4 @@
-##Seleniumのテストケース
+##selenium-lib
 Seleniumのテストケースを作成するのに便利なユーティリティです。
 
 ###Install
@@ -31,3 +31,29 @@ webdriver.ie.driver  = C:\\Path\\to\\workspace\\selenium-lib\\library\\IEDriverS
 実際にテストケースを置くプロジェクトは同じワークスペースに置いてください。対象のプロジェクトを右クリックし`Properties > Java Build Path > Projects`を選択、`Add`でselenium-libのプロジェクトを追加します。
 
 これだけではまだ、selenium-server-standalone-2.25.0.jarが参照できないので`Properties > Java Build Path > Libraries`を選択し、`Add JARs...`をクリックし先ほどコピーしたselenium-lib/library以下のjarファイルをビルドパスに追加して下さい。（JavaMailはGmailにアクセスする場合に必要です。）
+
+###junitでの使用
+`setUp`で生成して、クラス内で使いまわすと便利です。
+```java
+public class SomeTestCase extends TestCase
+{
+	private SeleniumUtil util;
+
+	@Before
+	public void setUp() throws Exception
+	{	
+		util = new SeleniumUtil();
+	}
+	
+	@Test
+	public void testSome() throws Exception
+	{
+		DriverEnumerator dirivers = new DriverEnumerator();
+		while (dirivers.hasMoreElements()) 
+		{
+			WebDriver driver = dirivers.nextElement();
+			driver.get("http://***.***.***/");
+			List<WebElement> ajaxList = util.waitForFindElements(driver, By.cssSelector("#ajax_list .item"));
+		}
+	}
+```
