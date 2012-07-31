@@ -17,14 +17,14 @@ public class DriverEnumerator implements Enumeration<WebDriver> {
 	
 	public DriverEnumerator()
 	{
-		driversKey.add("ChromeDriver");
-		driversValue.add("org.openqa.selenium.chrome.ChromeDriver");
+		driversKey.add("InternetExplorerDriver");
+		driversValue.add("org.openqa.selenium.ie.InternetExplorerDriver");
 		
 		driversKey.add("FirefoxDriver");
 		driversValue.add("org.openqa.selenium.firefox.FirefoxDriver");
 		
-		driversKey.add("InternetExplorerDriver");
-		driversValue.add("org.openqa.selenium.ie.InternetExplorerDriver");
+		driversKey.add("ChromeDriver");
+		driversValue.add("org.openqa.selenium.chrome.ChromeDriver");	
 	}
 	
 	public DriverEnumerator(String driverName)

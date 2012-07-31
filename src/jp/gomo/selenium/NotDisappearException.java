@@ -1,6 +1,6 @@
 package jp.gomo.selenium;
 
-public class NotDisappearException extends Exception {
+public class NotDisappearException extends RuntimeException {
 
 	/**
 	 * 

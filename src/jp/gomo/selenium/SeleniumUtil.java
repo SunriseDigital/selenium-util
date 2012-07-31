@@ -14,6 +14,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.internal.Locatable;
@@ -37,54 +38,13 @@ public class SeleniumUtil{
 		}
 	}
 	
-	/*public List<WebDriver> getChromeDriver()
-	{
-		List<WebDriver> drivers = new ArrayList<WebDriver>();
-		
-		drivers.add(new ChromeDriver());
-		
-		return drivers;
-	}
-	
-	public List<WebDriver> getInternetExplorerDriver()
-	{
-		List<WebDriver> drivers = new ArrayList<WebDriver>();
-		
-		drivers.add(new InternetExplorerDriver());
-		
-		return drivers;
-	}
-	
-	public List<WebDriver> getFirefoxDriver()
-	{
-		List<WebDriver> drivers = new ArrayList<WebDriver>();
-		
-		FirefoxProfile profile = new FirefoxProfile();
-		profile.setAcceptUntrustedCertificates(true);
-		profile.setAssumeUntrustedCertificateIssuer(false);
-		drivers.add(new FirefoxDriver(profile));
-		
-		return drivers;
-	}
-	
-	public List<WebDriver> getAllDrivers()
-	{
-		List<WebDriver> drivers = new ArrayList<WebDriver>();
-		
-		drivers.addAll(getChromeDriver());
-		drivers.addAll(getInternetExplorerDriver());
-		drivers.addAll(getFirefoxDriver());
-		
-		return drivers;
-	}*/
-	
 	public String getFileAbsolutePath(String path)
 	{
 		File image = new File(path);
 		return image.getAbsolutePath();
 	}
 	
-	public WebElement waitForDisplay(WebElement element) throws InterruptedException, NotDisplayException
+	public WebElement waitForDisplay(WebElement element) throws InterruptedException
 	{
 		for (int i = 0; i < default_wait_count; i++)
 		{
@@ -108,12 +68,12 @@ public class SeleniumUtil{
 		return element;
 	}
 	
-	public WebElement waitForFindElement(SearchContext element, By selector) throws InterruptedException, NotFoundException 
+	public WebElement waitForFindElement(SearchContext element, By selector) throws InterruptedException
 	{
 		return waitForFindElement(element, selector, default_wait_count);
 	}
 
-	public WebElement waitForFindElement(SearchContext element, By selector, int waitCount) throws InterruptedException, NotFoundException 
+	public WebElement waitForFindElement(SearchContext element, By selector, int waitCount) throws InterruptedException
 	{
 		WebElement target = null;
 		
@@ -137,12 +97,12 @@ public class SeleniumUtil{
 		return target;
 	}
 	
-	public List<WebElement> waitForFindElements(SearchContext element, By selector) throws InterruptedException, NotFoundException 
+	public List<WebElement> waitForFindElements(SearchContext element, By selector) throws InterruptedException
 	{
 		return waitForFindElements(element, selector, default_wait_count);
 	}
 	
-	public List<WebElement> waitForFindElements(SearchContext element, By selector, int waitCount) throws InterruptedException, NotFoundException 
+	public List<WebElement> waitForFindElements(SearchContext element, By selector, int waitCount) throws InterruptedException
 	{
 		for (int i = 0; i < waitCount; i++)
 		{
@@ -158,12 +118,12 @@ public class SeleniumUtil{
 		throw new NotFoundException("Not found elements for "+selector);
 	}
 	
-	public List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount) throws InterruptedException, NotFoundException 
+	public List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount) throws InterruptedException
 	{
 		return waitForCountElements(element, selector, expectedCount, default_wait_count);
 	}
 	
-	public List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount, int waitCount) throws InterruptedException, NotFoundException 
+	public List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount, int waitCount) throws InterruptedException
 	{
 		for (int i = 0; i < waitCount; i++)
 		{
@@ -179,12 +139,12 @@ public class SeleniumUtil{
 		throw new NotFoundException("Not found elements for "+selector);
 	}
 	
-	public void waitForDisappearElement(WebElement element) throws InterruptedException, NotDisappearException 
+	public void waitForDisappearElement(WebElement element) throws InterruptedException
 	{
 		waitForDisappearElement(element, default_wait_count);
 	}
 	
-	public void waitForDisappearElement(WebElement element, int waitCount) throws InterruptedException, NotDisappearException 
+	public void waitForDisappearElement(WebElement element, int waitCount) throws InterruptedException
 	{
 		for (int i = 0; i < waitCount; i++)
 		{
@@ -205,12 +165,12 @@ public class SeleniumUtil{
 		throw new NotDisappearException(element+" is still exists.");
 	}
 	
-	public void waitForNotFoundElements(SearchContext element, By selector) throws InterruptedException, NotFoundException 
+	public void waitForNotFoundElements(SearchContext element, By selector) throws InterruptedException
 	{
 		waitForNotFoundElements(element, selector, default_wait_count);
 	}
 	
-	public void waitForNotFoundElements(SearchContext element, By selector, int waitCount) throws InterruptedException, NotFoundException 
+	public void waitForNotFoundElements(SearchContext element, By selector, int waitCount) throws InterruptedException
 	{
 		for (int i = 0; i < waitCount; i++)
 		{
@@ -226,7 +186,7 @@ public class SeleniumUtil{
 		throw new NotFoundException("Still found elements for "+selector);
 	}
 	
-	public void assertNotExistsElement(WebElement element) throws NotDisappearException
+	public void assertNotExistsElement(WebElement element)
 	{
 		try 
 		{
@@ -256,7 +216,7 @@ public class SeleniumUtil{
 		Thread.sleep(300);
 	}
 	
-	public void scrollTo(SearchContext driver, By selector) throws InterruptedException, NotFoundException 
+	public void scrollTo(SearchContext driver, By selector) throws InterruptedException
 	{
 		scrollTo(driver, waitForFindElement(driver, selector));
 	}
@@ -266,5 +226,23 @@ public class SeleniumUtil{
 		Locatable loc = (Locatable) element;
 	    int y = loc.getCoordinates().getLocationOnScreen().getY();
 	    ((JavascriptExecutor)driver).executeScript("window.scrollBy(0,"+y+");");
+	}
+	
+	public void get(WebDriver driver, String uri) throws InterruptedException
+	{
+		UnhandledAlertException exception = null;
+		for (int i = 0; i < default_wait_count; i++)
+		{
+			try {
+				driver.get(uri);
+				return;
+			} catch (UnhandledAlertException e) {
+				exception = e;
+			}
+			
+			Thread.sleep(sleep_interval);
+		}
+		
+		throw exception;
 	}
 }

@@ -1,6 +1,6 @@
 package jp.gomo.selenium;
 
-public class NotDisplayException extends Exception {
+public class NotDisplayException extends RuntimeException {
 
 	/**
 	 * 

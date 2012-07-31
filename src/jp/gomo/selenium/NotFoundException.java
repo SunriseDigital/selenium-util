@@ -1,6 +1,6 @@
 package jp.gomo.selenium;
 
-public class NotFoundException extends Exception {
+public class NotFoundException extends RuntimeException {
 
 	/**
 	 * 
