@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -38,19 +42,43 @@ public class SeleniumUtil{
 		}
 	}
 	
+	/**
+	 * ワークスペースの相対パスを指定してファイルシステムの絶対パスを取得する
+	 * アップロードで使用します。
+	 * 
+	 * @param path
+	 * @return
+	 */
 	public String getFileAbsolutePath(String path)
 	{
 		File image = new File(path);
 		return image.getAbsolutePath();
 	}
 	
-	public WebElement waitForDisplay(WebElement element) throws InterruptedException
+	private void sleep()
+	{
+		try
+		{
+			Thread.sleep(sleep_interval);
+		}
+		catch (InterruptedException e)
+		{
+			throw new SleepException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * hiddenのエレメントが現れるのを待つ
+	 * @param element
+	 * @return
+	 */
+	public WebElement waitForDisplay(WebElement element)
 	{
 		for (int i = 0; i < default_wait_count; i++)
 		{
 			if(!element.isDisplayed())
 			{
-				Thread.sleep(sleep_interval);
+				sleep();
 			}
 			else
 			{
@@ -60,24 +88,19 @@ public class SeleniumUtil{
 		
 		if(!element.isDisplayed())
 		{
-			throw new NotDisplayException(element+" is not displayed.");
+			throw new NotHappenException(element+" is not displayed.");
 		}
 		
-		Thread.sleep(sleep_interval);
+		sleep();
 		
 		return element;
 	}
 	
-	public WebElement waitForFindElement(SearchContext element, By selector) throws InterruptedException
-	{
-		return waitForFindElement(element, selector, default_wait_count);
-	}
-
-	public WebElement waitForFindElement(SearchContext element, By selector, int waitCount) throws InterruptedException
+	public WebElement waitForFindElement(SearchContext element, By selector)
 	{
 		WebElement target = null;
 		
-		for (int i = 0; i < waitCount; i++)
+		for (int i = 0; i < default_wait_count; i++)
 		{
 			try 
 			{
@@ -85,26 +108,21 @@ public class SeleniumUtil{
 				break;
 				
 			} catch (NoSuchElementException e) {
-				Thread.sleep(sleep_interval);
+				sleep();
 			}
 		}
 		
 		if(target == null)
 		{
-			throw new NotFoundException("Not found element for "+selector);
+			throw new NotHappenException("Not found element for "+selector);
 		}
 		
 		return target;
 	}
 	
-	public List<WebElement> waitForFindElements(SearchContext element, By selector) throws InterruptedException
-	{
-		return waitForFindElements(element, selector, default_wait_count);
-	}
-	
-	public List<WebElement> waitForFindElements(SearchContext element, By selector, int waitCount) throws InterruptedException
-	{
-		for (int i = 0; i < waitCount; i++)
+	public List<WebElement> waitForFindElements(SearchContext element, By selector)
+	{	
+		for (int i = 0; i < default_wait_count; i++)
 		{
 			List<WebElement> list = element.findElements(selector);
 			if(list.size() != 0)
@@ -112,20 +130,15 @@ public class SeleniumUtil{
 				return list;
 			}
 			
-			Thread.sleep(sleep_interval);
+			sleep();
 		}
 		
-		throw new NotFoundException("Not found elements for "+selector);
+		throw new NotHappenException("Not found elements for "+selector);
 	}
 	
-	public List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount) throws InterruptedException
-	{
-		return waitForCountElements(element, selector, expectedCount, default_wait_count);
-	}
-	
-	public List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount, int waitCount) throws InterruptedException
-	{
-		for (int i = 0; i < waitCount; i++)
+	public List<WebElement> waitForCountElements(SearchContext element, By selector, int expectedCount)
+	{	
+		for (int i = 0; i < default_wait_count; i++)
 		{
 			List<WebElement> list = element.findElements(selector);
 			if(list.size() == expectedCount)
@@ -133,20 +146,15 @@ public class SeleniumUtil{
 				return list;
 			}
 			
-			Thread.sleep(sleep_interval);
+			sleep();
 		}
 		
-		throw new NotFoundException("Not found elements for "+selector);
+		throw new NotHappenException("Not found elements for "+selector);
 	}
 	
-	public void waitForDisappearElement(WebElement element) throws InterruptedException
+	public void waitForDisappearElement(WebElement element)
 	{
-		waitForDisappearElement(element, default_wait_count);
-	}
-	
-	public void waitForDisappearElement(WebElement element, int waitCount) throws InterruptedException
-	{
-		for (int i = 0; i < waitCount; i++)
+		for (int i = 0; i < default_wait_count; i++)
 		{
 			try {
 				
@@ -159,20 +167,15 @@ public class SeleniumUtil{
 				return;
 			}
 			
-			Thread.sleep(sleep_interval);
+			sleep();
 		}
 		
-		throw new NotDisappearException(element+" is still exists.");
+		throw new NotHappenException(element+" is still exists.");
 	}
 	
-	public void waitForNotFoundElements(SearchContext element, By selector) throws InterruptedException
+	public void waitForNotFoundElements(SearchContext element, By selector)
 	{
-		waitForNotFoundElements(element, selector, default_wait_count);
-	}
-	
-	public void waitForNotFoundElements(SearchContext element, By selector, int waitCount) throws InterruptedException
-	{
-		for (int i = 0; i < waitCount; i++)
+		for (int i = 0; i < default_wait_count; i++)
 		{
 			List<WebElement> list = element.findElements(selector);
 			if(list.size() == 0)
@@ -180,43 +183,41 @@ public class SeleniumUtil{
 				return;
 			}
 			
-			Thread.sleep(sleep_interval);
+			sleep();
 		}
 		
-		throw new NotFoundException("Still found elements for "+selector);
+		throw new NotHappenException("Still found elements for "+selector);
 	}
 	
-	public void assertNotExistsElement(WebElement element)
+	public boolean exists(WebElement element)
 	{
 		try 
 		{
 			element.isDisplayed();
-			throw new NotDisappearException(element+" is still exists.");
 		}
 		catch (StaleElementReferenceException e)
 		{
-			//例外が出なければDOMは存在するので成功
+			return false;
 		}
-	}
-	
-	public boolean hasClass(WebElement element) {
-		String _class = element.getAttribute("class");
-		
-		String[] part = _class.split(" ");
-		
-		System.out.println(part);
 		
 		return true;
 	}
 
-	public void acceptAlert(WebDriver driver) throws InterruptedException 
+	public void acceptAlert(WebDriver driver)
 	{
-		Thread.sleep(300);
-		driver.switchTo().alert().accept();
-		Thread.sleep(300);
+		try 
+		{
+			Thread.sleep(300);
+			driver.switchTo().alert().accept();
+			Thread.sleep(300);
+		}
+		catch (InterruptedException e)
+		{
+			throw new SleepException(e.getMessage());
+		}
 	}
 	
-	public void scrollTo(SearchContext driver, By selector) throws InterruptedException
+	public void scrollTo(SearchContext driver, By selector) 
 	{
 		scrollTo(driver, waitForFindElement(driver, selector));
 	}
@@ -228,7 +229,7 @@ public class SeleniumUtil{
 	    ((JavascriptExecutor)driver).executeScript("window.scrollBy(0,"+y+");");
 	}
 	
-	public void get(WebDriver driver, String uri) throws InterruptedException
+	public void get(WebDriver driver, String uri) 
 	{
 		UnhandledAlertException exception = null;
 		for (int i = 0; i < default_wait_count; i++)
@@ -240,9 +241,75 @@ public class SeleniumUtil{
 				exception = e;
 			}
 			
-			Thread.sleep(sleep_interval);
+			sleep();
 		}
 		
 		throw exception;
+	}
+	
+	public boolean exists(SearchContext context, By selector) 
+	{
+		sleep();
+		return context.findElements(selector).size() != 0;
+	}
+	
+	public List<String> getClassNameList(WebElement buttonWrap)
+	{
+		String[] classes = buttonWrap.getAttribute("class").split(" ");
+		
+		return Arrays.asList(classes);
+	}
+
+	public void waitForClassDisappear(WebDriver driver, WebElement element, String className) 
+	{
+		for (int i = 0; i < default_wait_count; i++)
+		{
+			List<String> classes = getClassNameList(element);
+			if(!classes.contains(className))
+			{
+				return;
+			}
+			
+			sleep();
+		}
+		
+		throw new NotHappenException("Class " + className + " did not disappear");
+	}
+
+	public void waitForClassAppear(WebDriver driver, WebElement element, String className) 
+	{
+		for (int i = 0; i < default_wait_count; i++)
+		{
+			List<String> classes = getClassNameList(element);
+			if(classes.contains(className))
+			{
+				return;
+			}
+			
+			sleep();
+		}
+		
+		throw new NotHappenException("Class " + className + " did not disappear");
+		
+	}
+	
+	public boolean hasClass(WebElement element, String className)
+	{
+		return getClassNameList(element).contains(className);
+	}
+	
+	public Matcher getRegexMatcher(String pattern, String text) 
+	{
+		return getRegexMatcher(pattern, text, 0);
+	}
+
+	public Matcher getRegexMatcher(String pattern, String text, int flag) 
+	{
+    	Pattern pttr = Pattern.compile(pattern, flag);
+		Matcher matcher = pttr.matcher(text);
+		
+		matcher.find();
+		
+		return matcher;
 	}
 }

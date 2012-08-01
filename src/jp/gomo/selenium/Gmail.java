@@ -18,7 +18,6 @@ public class Gmail {
 	private Store store;
 	private Session session;
 	private URLName urlName;
-	private ConsoleLoading counter;
 	
 	public Gmail(String login_id, String password) throws MessagingException
 	{
@@ -37,15 +36,11 @@ public class Gmail {
 		);
 
 		session = Session.getDefaultInstance(props, null);
-		
-		counter = new ConsoleLoading();
 	}
 	
 	public Message waitForFindMessage(MessageFinder finder) throws InterruptedException, MessagingException, ParseException
 	{
-		Thread counterThread = new Thread(counter);
-		
-		counterThread.start();
+		ConsoleLoading.start();
 		
 		close();
 		System.out.print("Connect to "+urlName.getHost()+" and search new message .");
@@ -80,7 +75,7 @@ public class Gmail {
 			Thread.sleep(500);
 		}
 		
-		counter.shutdown();
+		ConsoleLoading.stop();
 		return message;
 	}
 	
