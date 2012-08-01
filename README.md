@@ -19,18 +19,19 @@ http://www.oracle.com/technetwork/java/javamail/index.html
 mail.jar
 ```
 
-個々の環境に依存しそうなパスなどはホームフォルダにおいたPropertieファイルから読み込みます。ホームフォルダに`selenium-lib.properties`というファイルを作り、下記の情報を書き込んでください。（パスは自分の環境に合わせて書き換えて下さい）このファイルの内容は直接`System.setProperty(key, value)`に渡されます。  
-```
-webdriver.chrome.driver = C:\\Path\\to\\workspace\\selenium-lib\\library\\chromedriver.exe
-webdriver.firefox.bin  = C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe
-webdriver.ie.driver  = C:\\Path\\to\\workspace\\selenium-lib\\library\\IEDriverServer.exe
-```
-
 
 ###テストケースとの関連付け
 実際にテストケースを置くプロジェクトは同じワークスペースに置いてください。対象のプロジェクトを右クリックし`Properties > Java Build Path > Projects`を選択、`Add`でselenium-libのプロジェクトを追加します。
 
 これだけではまだ、selenium-server-standalone-2.25.0.jarが参照できないので`Properties > Java Build Path > Libraries`を選択し、`Add JARs...`をクリックし先ほどコピーしたselenium-lib/library以下のjarファイルをビルドパスに追加して下さい。（JavaMailはGmailにアクセスする場合に必要です。）
+
+個々の環境に依存しそうなパスなどはワークスペース直下に`system.properties`というプロパティファイルを作り定義して下さい。コンストラクタに設定プロパティファイルのパスを渡すことも可能です。
+このファイルの内容は直接`System.setProperty(key, value)`に渡されます。  
+```
+webdriver.chrome.driver = C:\\Path\\to\\workspace\\selenium-lib\\library\\chromedriver.exe
+webdriver.firefox.bin  = C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe
+webdriver.ie.driver  = C:\\Path\\to\\workspace\\selenium-lib\\library\\IEDriverServer.exe
+```
 
 ###junitでの使用
 `setUp`で生成して、クラス内で使いまわすと便利です。
@@ -43,6 +44,8 @@ public class SomeTestCase extends TestCase
 	public void setUp() throws Exception
 	{	
 		util = new SeleniumUtil();
+		//設定プロパティファイルを指定する場合は
+		//util = new SeleniumUtil("resource/settings.properties");
 	}
 	
 	@Test

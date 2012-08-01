@@ -29,10 +29,15 @@ public class SeleniumUtil{
 	
 	private int default_wait_count = 50;
 	
-	public SeleniumUtil() throws IOException{
-		
+	public SeleniumUtil() throws IOException
+	{
+		this("system.properties");
+	}
+	
+	public SeleniumUtil(String configFilePath) throws IOException
+	{
 		Properties config = new Properties();
-		InputStream inputStream = new FileInputStream(new File(System.getProperty("user.home")+File.separator+"selenium-lib.properties"));
+		InputStream inputStream = new FileInputStream(new File(configFilePath));
 		config.load(inputStream);
 		
 		Set<Entry<Object, Object>> configSet = config.entrySet();
