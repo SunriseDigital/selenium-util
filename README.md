@@ -4,10 +4,10 @@ Seleniumのテストケースを作成するのに便利なユーティリティ
 ###Install
 cloneしてください。
 ```
-$ git clone git@github.com:gomo/selenium-lib.git
+$ git@github.com:SunriseDigital/selenium-util.git
 ```
 
-このディレクトリを参照してeclipseのプロジェクトを作成し、`library`フォルダに下記のファイルをコピーし、jarファイルはビルドパスに追加して下さい。
+このディレクトリを参照してeclipseのプロジェクトを作成し、プロジェクト直下に`library`フォルダを作成、下記のファイルをコピーし、jarファイルはビルドパスに追加して下さい。
 http://code.google.com/p/selenium/downloads/list  
 ```
 selenium-server-standalone-2.25.0.jar
@@ -21,16 +21,16 @@ mail.jar
 
 
 ###テストケースとの関連付け
-実際にテストケースを置くプロジェクトは同じワークスペースに置いてください。対象のプロジェクトを右クリックし`Properties > Java Build Path > Projects`を選択、`Add`でselenium-libのプロジェクトを追加します。
+実際にテストケースを置くプロジェクトは同じワークスペースに置いてください。このプロジェクトのビルドパスにselenium-utilを追加します。対象のプロジェクトを右クリックし`Properties > Java Build Path > Projects`を選択、`Add`でselenium-utilのプロジェクトを追加します。
 
-これだけではまだ、selenium-server-standalone-2.25.0.jarが参照できないので`Properties > Java Build Path > Libraries`を選択し、`Add JARs...`をクリックし先ほどコピーしたselenium-lib/library以下のjarファイルをビルドパスに追加して下さい。（JavaMailはGmailにアクセスする場合に必要です。）
+これだけではまだ、selenium-server-standalone-2.25.0.jarが参照できないので`Properties > Java Build Path > Libraries`を選択し、`Add JARs...`をクリックし先ほどコピーしたselenium-util/library以下のjarファイルをビルドパスに追加して下さい。（JavaMailはGmailにアクセスするクラスが使用します）
 
 個々の環境に依存しそうなパスなどはワークスペース直下に`system.properties`というプロパティファイルを作り定義して下さい。コンストラクタに設定プロパティファイルのパスを渡すことも可能です。
 このファイルの内容は直接`System.setProperty(key, value)`に渡されます。  
 ```
-webdriver.chrome.driver = C:\\Path\\to\\workspace\\selenium-lib\\library\\chromedriver.exe
+webdriver.chrome.driver = C:\\Path\\to\\workspace\\selenium-util\\library\\chromedriver.exe
 webdriver.firefox.bin  = C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe
-webdriver.ie.driver  = C:\\Path\\to\\workspace\\selenium-lib\\library\\IEDriverServer.exe
+webdriver.ie.driver  = C:\\Path\\to\\workspace\\selenium-util\\library\\IEDriverServer.exe
 ```
 
 ###junitでの使用
