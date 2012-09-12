@@ -317,4 +317,21 @@ public class SeleniumUtil{
 		
 		return matcher;
 	}
+	
+	/**
+	 * クリック動作の便利メソッド
+	 * @param selector
+	 * @param driver
+	 */
+	public void click(String selector, WebDriver driver){
+		find(selector, driver).click();
+	}
+	
+	public WebElement find(String selector, WebDriver driver){
+		return driver.findElement(By.cssSelector(selector));
+	}
+	
+	public List<WebElement> findElements(String selector, WebDriver driver){
+		return driver.findElements(By.cssSelector(selector));
+	}
 }
