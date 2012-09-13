@@ -323,15 +323,51 @@ public class SeleniumUtil{
 	 * @param selector
 	 * @param driver
 	 */
-	public void click(String selector, WebDriver driver){
+	public void click(String selector, WebDriver driver)
+	{
 		find(selector, driver).click();
 	}
 	
-	public WebElement find(String selector, WebDriver driver){
+	public WebElement find(String selector, WebDriver driver)
+	{
 		return driver.findElement(By.cssSelector(selector));
 	}
 	
-	public List<WebElement> findElements(String selector, WebDriver driver){
+	public List<WebElement> findElements(String selector, WebDriver driver)
+	{
 		return driver.findElements(By.cssSelector(selector));
+	}
+	
+	/**
+	 * 要素をクリックして新しいウィンドウにフォーカスする
+	 * TODO:もう少し整理できそうな気がする
+	 * @param ele
+	 * @param driver
+	 */
+	public void clickAndFocusNewWindow(WebElement ele, WebDriver driver)
+	{
+		String current_window_id = driver.getWindowHandle();
+		ele.click();
+		
+		//TODO:ウィンドウが開くのを待つ処理がいるか？
+		java.util.Set<String> window_ids = driver.getWindowHandles();
+		if(window_ids.size() < 2)
+		{
+			return;
+		}
+		
+		//新しいウインドウIDを取得
+		String new_window_id = null;
+		for(String id :window_ids)
+		{
+			//現在のウインドウと違うIDのものがあったらそのIDを格納
+			//最後の値が新しくひらいたものと判定している。
+			if(!id.equals(current_window_id))
+			{
+				new_window_id = id;
+			}
+		}
+		
+		driver.switchTo().window(new_window_id);
 	}
 }
