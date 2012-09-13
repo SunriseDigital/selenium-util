@@ -370,4 +370,33 @@ public class SeleniumUtil{
 		
 		driver.switchTo().window(new_window_id);
 	}
+	
+	/**
+	 * 指定の文言がページ内のテキストに存在するかをページングしながら判定するメソッド
+	 * search_string: 調べたい文字列
+	 * next_link_selector: 次ページへのリンクを取得するためのセレクター
+	 * @param search_string
+	 * @param next_link_selector
+	 * @param driver
+	 * @return Boolean
+	 */
+	public Boolean searchWithPaging(String search_string, String next_link_selector, WebDriver driver)
+	{
+		String page_text = find("body", driver).getText();
+		if(page_text.indexOf(search_string) != -1)
+		{
+			return true;
+		}
+		
+		//次のページへのリンクがなければfalse
+		if(!exists(driver, By.cssSelector(next_link_selector)))
+		{
+			return false;
+		}
+		
+		//次ページへ移動
+		click(next_link_selector, driver);
+		//再帰的に調べる
+		return searchWithPaging(search_string, next_link_selector, driver);
+	}
 }
