@@ -11,6 +11,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Date;
 
 
 import org.openqa.selenium.By;
@@ -318,6 +319,21 @@ public class SeleniumUtil{
 		return matcher;
 	}
 	
+	public Long getTimestamp(){
+		Date now = new Date();
+		return now.getTime();
+	}
+	
+	public WebElement find(String selector, WebDriver driver)
+	{
+		return driver.findElement(By.cssSelector(selector));
+	}
+
+	public List<WebElement> findElements(String selector, WebDriver driver)
+	{
+		return driver.findElements(By.cssSelector(selector));
+	}
+
 	/**
 	 * クリック動作の便利メソッド
 	 * @param selector
@@ -328,14 +344,36 @@ public class SeleniumUtil{
 		find(selector, driver).click();
 	}
 	
-	public WebElement find(String selector, WebDriver driver)
+	/**
+	 * 文字を入力する便利メソッド
+	 * @param selector
+	 * @param driver
+	 */
+	public void type(String text, String selector, WebDriver driver)
 	{
-		return driver.findElement(By.cssSelector(selector));
+		find(selector, driver).sendKeys(text);
 	}
 	
-	public List<WebElement> findElements(String selector, WebDriver driver)
+	/**
+	 * selectの中から指定した値と同じ値optionをクリックする
+	 * @param value
+	 * @param selector
+	 * @param driver
+	 */
+	public void select(String value, String selector, WebDriver driver)
 	{
-		return driver.findElements(By.cssSelector(selector));
+//TODO:複数選択可のものは想定していない
+		WebElement select = waitForFindElement(driver, By.cssSelector(selector));
+		select.click();
+		java.util.List<WebElement> options = select.findElements(By.cssSelector("option"));
+		for(WebElement option :options){
+			if(option.getAttribute("value").equals(value))
+			{
+				System.out.println(option.getText());
+				option.click();
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -380,7 +418,7 @@ public class SeleniumUtil{
 	 * @param driver
 	 * @return Boolean
 	 */
-	public Boolean searchWithPaging(String search_string, String next_link_selector, WebDriver driver)
+	public Boolean searchStringWithPaging(String search_string, String next_link_selector, WebDriver driver)
 	{
 		String page_text = find("body", driver).getText();
 		if(page_text.indexOf(search_string) != -1)
@@ -397,6 +435,6 @@ public class SeleniumUtil{
 		//次ページへ移動
 		click(next_link_selector, driver);
 		//再帰的に調べる
-		return searchWithPaging(search_string, next_link_selector, driver);
+		return searchStringWithPaging(search_string, next_link_selector, driver);
 	}
 }

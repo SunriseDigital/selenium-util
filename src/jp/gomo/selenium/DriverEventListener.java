@@ -74,12 +74,12 @@ public class DriverEventListener extends AbstractWebDriverEventListener {
 	protected void checkPageError(WebDriver driver)
 	{
 		//phpエラーチェック
-		String pageSource = driver.getPageSource();
+		String pageText = driver.findElement(By.cssSelector("body")).getText();
 		String[] errors = {"Notice", "Fatal error", "Warning"};
 		for(String error: errors){
-			if(pageSource.indexOf(error) != -1)
+			if(pageText.indexOf(error) != -1)
 			{
-				System.out.println("[PHP ERROR]");
+				System.out.println("[PHP ERROR]" + driver.getCurrentUrl());
 			}
 		}
 
