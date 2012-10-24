@@ -73,6 +73,14 @@ public class DriverEventListener extends AbstractWebDriverEventListener {
 	 */
 	protected void checkPageError(WebDriver driver)
 	{
+		try
+		{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e)
+		{	
+		}
+		
 		//phpエラーチェック
 		String pageText = driver.findElement(By.cssSelector("body")).getText();
 		String[] errors = {"Notice", "Fatal error", "Warning"};

@@ -6,3 +6,7 @@
 *.ear
 
 library/*
+.classpath
+system.properties
+.settings
+.project

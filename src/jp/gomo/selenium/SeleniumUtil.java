@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Date;
 
-
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -26,7 +26,7 @@ import org.openqa.selenium.internal.Locatable;
 
 public class SeleniumUtil{
 	
-	private int sleep_interval = 200;
+	private int sleep_interval = 500;
 	
 	private int default_wait_count = 50;
 	
@@ -256,6 +256,7 @@ public class SeleniumUtil{
 	public boolean exists(SearchContext context, By selector) 
 	{
 		sleep();
+		sleep();
 		return context.findElements(selector).size() != 0;
 	}
 	
@@ -326,7 +327,8 @@ public class SeleniumUtil{
 	
 	public WebElement find(String selector, WebDriver driver)
 	{
-		return driver.findElement(By.cssSelector(selector));
+		return waitForFindElement(driver, By.cssSelector(selector));
+		//return driver.findElement(By.cssSelector(selector));
 	}
 
 	public List<WebElement> findElements(String selector, WebDriver driver)
@@ -342,6 +344,7 @@ public class SeleniumUtil{
 	public void click(String selector, WebDriver driver)
 	{
 		find(selector, driver).click();
+		sleep();
 	}
 	
 	/**
@@ -364,16 +367,8 @@ public class SeleniumUtil{
 	{
 //TODO:複数選択可のものは想定していない
 		WebElement select = waitForFindElement(driver, By.cssSelector(selector));
-		select.click();
-		java.util.List<WebElement> options = select.findElements(By.cssSelector("option"));
-		for(WebElement option :options){
-			if(option.getAttribute("value").equals(value))
-			{
-				System.out.println(option.getText());
-				option.click();
-				break;
-			}
-		}
+		Select click = new Select(select);
+		click.selectByValue(value);
 	}
 	
 	/**
@@ -386,6 +381,7 @@ public class SeleniumUtil{
 	{
 		String current_window_id = driver.getWindowHandle();
 		ele.click();
+		sleep();
 		
 		//TODO:ウィンドウが開くのを待つ処理がいるか？
 		java.util.Set<String> window_ids = driver.getWindowHandles();
@@ -418,23 +414,99 @@ public class SeleniumUtil{
 	 * @param driver
 	 * @return Boolean
 	 */
-	public Boolean searchStringWithPaging(String search_string, String next_link_selector, WebDriver driver)
+	public Boolean searchStringWithPaging(String search_string, String next_link_selector, String next_link_text, WebDriver driver)
 	{
-		String page_text = find("body", driver).getText();
-		if(page_text.indexOf(search_string) != -1)
+		return searchStringWithPagingSource(search_string, next_link_selector, next_link_text, driver, true);
+	}
+	
+	/**
+	 * ページのhtmlソースに指定の文字列があるかどうかページングしながら判定する
+	 * @param search_string
+	 * @param next_link_selector
+	 * @param driver
+	 * @return Boolean
+	 */
+	public Boolean searchStringWithPagingSource(
+		String search_string,
+		String next_link_selector,
+		String next_link_text,
+		WebDriver driver
+	){
+		return searchStringWithPagingSource(
+			search_string,
+			next_link_selector,
+			next_link_text,
+			driver,
+			false);
+	}
+	
+	private Boolean searchStringWithPagingSource(
+			String search_string,
+			String next_link_selector,
+			String next_link_text,
+			WebDriver driver,
+			Boolean flag)
+	{
+		sleep();
+		sleep();
+System.out.println(driver.getCurrentUrl());
+		String text = (flag == true) ? find("body", driver).getText() : driver.getPageSource();
+
+		
+		sleep();
+
+		if(text.indexOf(search_string) != -1)
 		{
 			return true;
 		}
-		
+
+		sleep();
+		sleep();
+		sleep();
+		sleep();
 		//次のページへのリンクがなければfalse
 		if(!exists(driver, By.cssSelector(next_link_selector)))
 		{
 			return false;
 		}
-		
+
 		//次ページへ移動
-		click(next_link_selector, driver);
+		//次ページへのリンク要素を取得
+		java.util.List<WebElement> links = findElements(next_link_selector, driver);
+		WebElement link_element = null;
+		for(WebElement link :links)
+		{
+			if(link.getText().equals(next_link_text))
+			{
+				link_element = link;
+				break;
+			}
+		}
+		
+		if(link_element == null)
+		{
+			return false;
+		}
+		
+		
+		link_element.click();
+		sleep();
+		sleep();
+		sleep();
+		sleep();
 		//再帰的に調べる
-		return searchStringWithPaging(search_string, next_link_selector, driver);
+		return searchStringWithPagingSource(search_string, next_link_selector, next_link_text, driver, flag);
+	}
+	
+	public Boolean isTextFound(String search_string, WebDriver driver)
+	{
+		String text = find("body", driver).getText();
+		return (text.indexOf(search_string) != -1);
+	}
+	
+	public WebElement findLastElement(String selector, WebDriver driver)
+	{
+		java.util.List<WebElement> list = driver.findElements(By.cssSelector(selector));
+		return list.get(list.size() - 1);
 	}
 }
