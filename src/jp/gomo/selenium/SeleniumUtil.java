@@ -230,8 +230,7 @@ public class SeleniumUtil{
 
 	public void scrollTo(SearchContext driver, WebElement element) 
 	{
-		Locatable loc = (Locatable) element;
-	    int y = loc.getCoordinates().getLocationOnScreen().getY();
+	    int y = element.getLocation().getY();
 	    ((JavascriptExecutor)driver).executeScript("window.scrollBy(0,"+y+");");
 	}
 	

@@ -1,6 +1,9 @@
 ##selenium-lib
 Seleniumのテストケースを作成するのに便利なユーティリティです。
 
+Selenimu Javadoc
+http://selenium.googlecode.com/git/docs/api/java/index.html
+
 ###Install
 cloneしてください。
 ```
@@ -10,7 +13,7 @@ $ git@github.com:SunriseDigital/selenium-util.git
 このディレクトリを参照してeclipseのプロジェクトを作成し、プロジェクト直下に`library`フォルダを作成、下記のファイルをコピーし、jarファイルはビルドパスに追加して下さい。
 http://code.google.com/p/selenium/downloads/list  
 ```
-selenium-server-standalone-2.25.0.jar
+selenium-server-standalone-2.37.0.jar
 IEDriverServer.exe
 chromedriver.exe
 ```
@@ -23,7 +26,7 @@ mail.jar
 ###テストケースとの関連付け
 実際にテストケースを置くプロジェクトは同じワークスペースに置いてください。このプロジェクトのビルドパスにselenium-utilを追加します。対象のプロジェクトを右クリックし`Properties > Java Build Path > Projects`を選択、`Add`でselenium-utilのプロジェクトを追加します。
 
-これだけではまだ、selenium-server-standalone-2.25.0.jarが参照できないので`Properties > Java Build Path > Libraries`を選択し、`Add JARs...`をクリックし先ほどコピーしたselenium-util/library以下のjarファイルをビルドパスに追加して下さい。（JavaMailはGmailにアクセスするクラスが使用します）
+これだけではまだ、selenium-server-standalone-2.37.0.jarが参照できないので`Properties > Java Build Path > Libraries`を選択し、`Add JARs...`をクリックし先ほどコピーしたselenium-util/library以下のjarファイルをビルドパスに追加して下さい。（JavaMailはGmailにアクセスするクラスが使用します）
 
 個々の環境に依存しそうなパスなどはワークスペース直下に`system.properties`というプロパティファイルを作り定義して下さい。コンストラクタに設定プロパティファイルのパスを渡すことも可能です。
 このファイルの内容は直接`System.setProperty(key, value)`に渡されます。  
