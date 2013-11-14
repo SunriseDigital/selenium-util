@@ -1,7 +1,8 @@
 ##selenium-lib
 Seleniumのテストケースを作成するのに便利なユーティリティです。
 
-Selenimu Javadoc
+Selenium Javadoc
+
 http://selenium.googlecode.com/git/docs/api/java/index.html
 
 ###Install
