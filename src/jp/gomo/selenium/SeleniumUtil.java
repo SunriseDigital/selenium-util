@@ -22,7 +22,6 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.internal.Locatable;
 
 public class SeleniumUtil{
 	
@@ -71,6 +70,23 @@ public class SeleniumUtil{
 		{
 			throw new SleepException(e.getMessage());
 		}
+	}
+	
+	public void waitForStringEquals(WebElement element, String string)
+	{
+		for (int i = 0; i < default_wait_count; i++)
+		{
+			if(!element.getText().equals(string))
+			{
+				sleep();
+			}
+			else
+			{
+				return;
+			}
+		}
+		
+		throw new NotHappenException(element.getText()+" is not equals "+string);
 	}
 	
 	/**
