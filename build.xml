@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="selenium-util" default="jar" basedir="." >
     <!-- Antは基本デフォルトでファイルを上書きしない設定なのでバージョンを変更しないと新しく作成されません。 -->
-    <property name="version" value="1.0.0" />
+    <property name="version" value="1.0.1" />
 	<target name="jar">
 		<jar basedir="src" jarfile="build/selenium-util-${version}.jar" />
 	</target>

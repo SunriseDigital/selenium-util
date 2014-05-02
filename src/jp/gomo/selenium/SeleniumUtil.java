@@ -13,12 +13,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -519,9 +523,16 @@ System.out.println(driver.getCurrentUrl());
 		return (text.indexOf(search_string) != -1);
 	}
 	
-	public WebElement findLastElement(String selector, WebDriver driver)
-	{
-		java.util.List<WebElement> list = driver.findElements(By.cssSelector(selector));
-		return list.get(list.size() - 1);
+	public void screenshot(WebDriver driver, String filePath) throws IOException{
+		File scrFile = null;
+		try {
+			//firefoxはこっち
+			scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+		} catch (Exception e) {
+			//chromeとphantomはこっち
+			scrFile = ((TakesScreenshot)new Augmenter().augment(driver)).getScreenshotAs(OutputType.FILE);
+		}
+		
+		FileUtils.copyFile(scrFile, new File(filePath));
 	}
 }
