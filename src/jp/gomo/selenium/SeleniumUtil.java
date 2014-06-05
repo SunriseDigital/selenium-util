@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Arrays;
@@ -15,6 +17,8 @@ import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -33,22 +37,48 @@ public class SeleniumUtil{
 	
 	private int default_wait_count = 50;
 	
-	public SeleniumUtil() throws IOException
+	private static SeleniumUtil instance = null;
+	
+	public synchronized static SeleniumUtil getInstance(){
+		if(instance == null){
+			instance = new SeleniumUtil();
+		}
+		return instance;
+	}
+	
+	public SeleniumUtil()
 	{
 		this("system.properties");
 	}
 	
-	public SeleniumUtil(String configFilePath) throws IOException
+	public SeleniumUtil(String configFilePath)
 	{
-		Properties config = new Properties();
-		InputStream inputStream = new FileInputStream(new File(configFilePath));
-		config.load(inputStream);
-		
-		Set<Entry<Object, Object>> configSet = config.entrySet();
-		for (Entry<Object, Object> entry : configSet) 
-		{
-			System.setProperty((String)entry.getKey(), (String)entry.getValue());
+		File configFile = new File(configFilePath);
+		if(configFile.exists()){
+			InputStream inputStream;
+			Properties config = new Properties();
+			try {
+				inputStream = new FileInputStream(configFile);
+				config.load(inputStream);
+			} catch (IOException e) {
+				//読み込みに失敗した時は何もしない
+			}
+			
+			Set<Entry<Object, Object>> configSet = config.entrySet();
+			for (Entry<Object, Object> entry : configSet) 
+			{
+				System.setProperty((String)entry.getKey(), (String)entry.getValue());
+			}
 		}
+	}
+	
+	public WebDriver createRemoteDriver(String host, String port, DesiredCapabilities capability) throws MalformedURLException{		
+		String seleniumServer = String.format(
+			"http://%s:%s/wd/hub", host, port
+		);
+		WebDriver driver = new RemoteWebDriver(new URL(seleniumServer), capability);
+		
+		return driver;
 	}
 	
 	/**
